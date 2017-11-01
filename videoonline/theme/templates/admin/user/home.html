@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body %}
+{% block dh %}
+{% endblock %}
+<div class="row text-center">
+    <br><br><br>
+    <h1>您好，{{ user }}。 您的权限是"{{ p }}"</h1>
+
+    <h2>
+        可以编辑用户
+        <br><br>
+        <a href="{{ url_for('admin.home') }}">返回管理首页</a>
+        <br><br>
+    </h2>
+</div>
+{% endblock %}

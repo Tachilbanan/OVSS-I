@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,, initial-scale=1">
+  <!-- Will be replace the page title -->
+  <title>{% block title %}Home{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <!-- Macro: `render paginate` -->
+  {% macro render_pagination(pagination, endpoint) %}
+    <nav class="text-center">
+      <ul class="pagination">
+        <li>
+        {% if pagination.has_prev %}
+          <a href="{{ url_for('.home', page=pagination.prev().page)
+            }}" aria-label="Previous">
+        {% else %}
+          <a href="{{ url_for('.home', page=1) }}" aria-label="Previous">
+        {% endif %}
+            <span aria-label="true">&laquo;</span>
+          </a>
+        </li>
+        {% for page in pagination.iter_pages() %}
+          {% if page %}
+            {% if page != pagination.page %}
+              <li>
+                <a href="{{ url_for('.home', page=page) }}">
+                  {{ page }}
+                </a>
+              </li>
+            {% else %}
+              <li><a href="">{{ page }}</a></li>
+            {% endif %}
+          {% else %}
+            <li><a>...</a></li>
+          {% endif %}
+        {% endfor %}
+        <li>
+          <a href="{% if pagination.has_next %}{{  url_for('.home', page=pagination.next().page )
+            }} {% else %}#{% endif %}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        <li>
+      </ul>
+    </nav>
+  {% endmacro %}
+    {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="container">
+    <!-- LOGO部分 -->
+    <div class="text-center">
+        LOGO
+    </div>
+      {% block dh %}
+      <!-- 导航栏 -->
+      <nav class="navbar navbar-default" role="navigation">
+          <div class="container-fluid">
+              <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example-navbar-collapse">
+                      <span class="sr-only">切换导航</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="{{ url_for('/.home') }}">OVSS</a>
+              </div>
+              <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                  <!-- 临时登录入口 -->
+                  <ul class="nav navbar-nav">
+                      <li><a href="{{ url_for('admin.home') }}">临时登录入口</a></li>
+                  </ul>
+
+                 {% for classify in top_classifys %}
+                  <ul class="nav navbar-nav">
+                      <li><a href="{{ url_for('/.classify',classify_name=classify.name) }}">{{ classify.name }}</a></li>
+                  </ul>
+                {% endfor %}
+              </div>
+          </div>
+      </nav>
+      {% endblock %}
+    {# flask flash 消息 #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            {{ messages }}
+          </div>
+        {% endfor%}
+      {% endif %}
+    {% endwith %}
+    {% block body %}
+        body_content
+    {% endblock %}
+  </div>
+  <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+</html>

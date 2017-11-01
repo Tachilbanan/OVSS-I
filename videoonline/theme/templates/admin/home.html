@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body %}
+{% block dh %}
+{% endblock %}
+<div class="row text-center">
+    <br><br><br>
+    <h1>您好，{{ user }}。 您的权限是"{{ p }}"</h1>
+
+    <h2>
+        <a href="{{ url_for('admin.logout') }}">Logout</a>
+        <br><br>
+        <a href="{{ url_for('admin.ad') }}">去编辑用户！</a>
+        <br><br>
+    </h2>
+</div>
+{% endblock %}
