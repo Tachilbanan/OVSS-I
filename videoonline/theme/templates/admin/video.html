@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+    .table th, .table td {
+        text-align: center;
+        height:38px;
+    }
+</style>
+{% endblock %}
+{% block body %}
+{% block logo %}{% endblock %}
+{% block dh %}{% endblock %}
+<div class="row">
+			<div class="col-xs-12 col-md-12 col-sm-12">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>视频名</th>
+							<th>日期</th>
+							<th colspan="2">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+                    {% if video %}
+                    {% for i in video %}
+						<tr>
+							<td>{{ i.name }}</td>
+							<td> i.time </td>
+							<td><a href="{{ url_for('admin.video') }}">修改</a></td>
+							<td><a href="{{ url_for('admin.video') }}">删除</a></td>
+						</tr>
+                    {% endfor %}
+                    {% endif %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+{% endblock %}

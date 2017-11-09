@@ -13,7 +13,7 @@ class User(db.Model):
     '''Represents Proected users.'''
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255))
     password = db.Column(db.String(255))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
@@ -24,7 +24,7 @@ class User(db.Model):
         self.password = self.set_password(password)
 
         # Setup the default-role for user.
-        helper = Role.query.filter_by(name = 'helper').one()
+        helper = Role.query.filter_by(name='helper').one()
         self.roles = helper
 
     def __repr__(self):
@@ -75,8 +75,8 @@ class Role(db.Model):
     """Represents Proected roles."""
     __tablename__ = 'roles'
 
-    id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(255), unique = True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), unique=True)
     description = db.Column(db.String(255))
     users = db.relationship('User', backref='roles')
 

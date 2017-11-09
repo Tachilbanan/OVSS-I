@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+    .table th, .table td {
+        text-align: center;
+        height:38px;
+    }
+</style>
+{% endblock %}
+{% block body %}
+{% block logo %}{% endblock %}
+{% block dh %}{% endblock %}
+<div class="row">
+    <div class="col-xs-12 col-md-12 col-sm-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>权限</th>
+                    <th colspan="2">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if user %}
+            {% for i in user %}
+                <tr>
+                    <td>{{ i.username }}</td>
+                    <td>{{ i.roles.name }}</td>
+                    <td><a href="{{ url_for('admin.user') }}">修改</a></td>
+                    <td><a href="{{ url_for('admin.user') }}">删除</a></td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

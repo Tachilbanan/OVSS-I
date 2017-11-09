@@ -49,51 +49,57 @@
 </head>
 <body>
   <div class="container">
-    <!-- LOGO部分 -->
-    <div class="text-center">
-        LOGO
-    </div>
-      {% block dh %}
-      <!-- 导航栏 -->
-      <nav class="navbar navbar-default" role="navigation">
-          <div class="container-fluid">
-              <div class="navbar-header">
-                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example-navbar-collapse">
-                      <span class="sr-only">切换导航</span>
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                  </button>
-                  <a class="navbar-brand" href="{{ url_for('/.home') }}">OVSS</a>
-              </div>
-              <div class="collapse navbar-collapse" id="example-navbar-collapse">
-                  <!-- 临时登录入口 -->
-                  <ul class="nav navbar-nav">
-                      <li><a href="{{ url_for('admin.home') }}">临时登录入口</a></li>
-                  </ul>
-
-                 {% for classify in top_classifys %}
-                  <ul class="nav navbar-nav">
-                      <li><a href="{{ url_for('/.classify',classify_name=classify.name) }}">{{ classify.name }}</a></li>
-                  </ul>
-                {% endfor %}
-              </div>
-          </div>
-      </nav>
-      {% endblock %}
+      <div class="row">
+          {% block logo %}
+        <!--LOGO部分-->
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                LOGO
+            </div>
+          {% endblock %}
+          {% block dh %}
+            <div>
+                <!--名字-->
+                <div class="col-xs-2 text-center" style="background-color:rgba(0,0,0,0.3)">
+                    <h4>OVSS-I</h4>
+                </div>
+                <!--搜索框,导航栏-->
+                <div class="col-xs-10 col-xs-offset-0 input-group btn-group" style="margin-top:0px positon:relative">
+                    <input type="text" class="form-control"placeholder="请输入字段名" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-search">搜索</button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">分类
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="{{ url_for('admin.home') }}">临时登录访问</a>
+                            </li>
+                        {% for classify in top_classifys %}
+                              <li>
+                                  <a href="{{ url_for('/.classify',classify_name=classify.name) }}">{{ classify.name }}</a>
+                              </li>
+                        {% endfor %}
+                        </ul>
+                    </span>
+                </div>
+            </div>
+          {% endblock %}
+        </div>
+      <div class="row">
     {# flask flash 消息 #}
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="button" class="close" data-dismiss="alert" aria-label="Close">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            {{ messages }}
-          </div>
+            <div class="alert alert-{{ category }}">
+              <a href="#" class="close" data-dismiss="alert">
+                &times;
+            </a>
+            {{ message }}
+            </div>
         {% endfor%}
       {% endif %}
     {% endwith %}
+      </div>
     {% block body %}
         body_content
     {% endblock %}

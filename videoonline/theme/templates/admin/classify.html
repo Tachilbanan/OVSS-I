@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+    .table th, .table td {
+        text-align: center;
+        height:38px;
+    }
+</style>
+{% endblock %}
+{% block body %}
+{% block logo %}{% endblock %}
+{% block dh %}{% endblock %}
+<div class="row">
+    <div class="col-xs-12 col-md-12 col-sm-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>标签名</th>
+                    <th colspan="2">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if classify %}
+            {% for i in classify %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td><a href="{{ url_for('admin.classify') }}">修改</a></td>
+                    <td><a href="{{ url_for('admin.classify') }}">删除</a></td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

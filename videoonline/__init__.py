@@ -1,9 +1,9 @@
 from flask import Flask, render_template
-from videoonline import models
-from videoonline.models import db
-from videoonline.extensions import bcrypt, login_manager, principals
+from videoonline.models import db, User, Video, Role, Classify
+from videoonline.extensions import bcrypt, login_manager, principals, cache, assets_env, main_css, main_js
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 from flask_login import current_user
+
 
 def Create_App(Config = 'videoonline.config.DevConfig'):
     app = Flask(__name__)
@@ -14,13 +14,18 @@ def Create_App(Config = 'videoonline.config.DevConfig'):
         db.init_app(app)
         # 数据库是一个重要的组件，所以先把数据库内容全部完成再继续后面的操作
 
-
         # Init the Flask-Bcrypt via app object
         bcrypt.init_app(app)
         # Init the Flask-Login via app object
         login_manager.init_app(app)
         # Init the Flask-Prinicpal via app object
         principals.init_app(app)
+        # 缓存
+        cache.init_app(app)
+        # 网页压缩
+        assets_env.init_app(app)
+        assets_env.register('main_js', main_js)
+        assets_env.register('main_css', main_css)
 
         # 因为 identity_loaded 信号实现函数,需要访问 app 对象, 所以直接在 create_app() 中实现.
         @identity_loaded.connect_via(app)
@@ -55,7 +60,7 @@ def Create_App(Config = 'videoonline.config.DevConfig'):
         from videoonline.view import root_view
         from videoonline.admin import admin_view
 
-        app.register_blueprint(root_view, url_prefix = '/')
-        app.register_blueprint(admin_view, url_prefix = '/admin')
+        app.register_blueprint(root_view)
+        app.register_blueprint(admin_view, url_prefix='/admin')
 
         return app
