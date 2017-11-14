@@ -14,6 +14,10 @@
 				position:fixed;
 				top:55%;
 			}
+			#progress_in{
+				position:fixed;
+				top:70%;
+			}
 		</style>
 	</head>
 	<body>
@@ -48,6 +52,15 @@
 						</div>
 						<div class="col-md-2 col-xs-2 col-sm-2 text-center">
 						<button type="reset" class="btn btn-default btn-primary  btn-lg">取消</button>
+						</div>
+					</div>
+					<div id="progress_in" class="col-md-12 col-xs-12 col-sm-12">
+						<div class="progress">
+							<div class="progress-bar progress-bar-info" role="progressbar"
+								 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+								 style="width: 50%;">
+								<span class="sr-only">30% 完成（信息）</span>
+							</div>
 						</div>
 					</div>
 				</form>
