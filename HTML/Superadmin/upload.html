@@ -10,31 +10,47 @@
 				position:fixed;
 				top:40%;
 			}
+			#buttonr{
+				position:fixed;
+				top:55%;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-md-4 col-sm-4 col-xs-4 col-md-offset-4 col-xs-offset-4 col-sm-offset-4 button">
-					<input type="file" id="input03" multiple="multiple" class="filestyle" tabindex="-1" style="opacity: 0; position:absolute; height:100%; width:93%;">
-					<!-- <div class="bootstrap-filestyle input-group"> -->
-						<!-- <div name="filedrag" style="position:absolute; width: 100%; height: 38px; z-index:-1;"></div> -->
-						<!-- <span class="group-span-filestyle" tabindex="0"> -->
-							<!-- <label for="input03" style="margin-bottom:0;" class="btn btn-primary"> -->
-								<!-- <span class="oi oi-folder"></span> -->
-								<!-- <span class="buttonText">上传文件</span> -->
-							<!-- </label> -->
-						<!-- </span> -->
-					<!-- </div> -->
-					<div class="bootstrap-filestyle">
-						<button type="form-group" class="btn  btn-primary  btn-lg btn-block">
-							<label for="input03" style="margin-bottom:0"> 
-								<span class="glyphicon glyphicon glyphicon-cloud" aria-hidden="true"></span><br>
-								<span>上传文件</span>
-							</label>
-						</button>
+				<form>
+					<div class="col-md-4 col-sm-4 col-xs-4 col-md-offset-4 col-xs-offset-4 col-sm-offset-4 button">
+					<!--上传文件，opacity控制为透明不显示-->
+						<input type="file" id="input03" multiple="multiple" class="filestyle" tabindex="-1" style="opacity: 0; position:absolute; height:100%; width:93%;">
+						<!-- <div class="bootstrap-filestyle input-group"> -->
+							<!-- <div name="filedrag" style="position:absolute; width: 100%; height: 38px; z-index:-1;"></div> -->
+							<!-- <span class="group-span-filestyle" tabindex="0"> -->
+								<!-- <label for="input03" style="margin-bottom:0;" class="btn btn-primary"> -->
+									<!-- <span class="oi oi-folder"></span> -->
+									<!-- <span class="buttonText">上传文件</span> -->
+								<!-- </label> -->
+							<!-- </span> -->
+						<!-- </div> -->
+						<div class="bootstrap-filestyle">
+						<!--按钮样式-->
+							<button type="form-group" class="btn  btn-primary  btn-lg btn-block">
+								<label for="input03" style="margin-bottom:0"> 
+									<span class="glyphicon glyphicon glyphicon-cloud" aria-hidden="true"></span><br>
+									<span>选择文件</span>
+								</label>
+							</button>
+						</div>
 					</div>
-				</div>
+					<div id="buttonr" class="col-md-12 col-xs-12 col-sm-12">
+						<div class="col-md-2 col-xs-2 col-sm-2 col-md-offset-4 col-xs-offset-4 col-sm-offset-4 text-center">
+						<button type="submit" class="btn btn-default btn-primary  btn-lg">上传</button>
+						</div>
+						<div class="col-md-2 col-xs-2 col-sm-2 text-center">
+						<button type="reset" class="btn btn-default btn-primary  btn-lg">取消</button>
+						</div>
+					</div>
+				</form>
 			</div>
 		</div>
 	</body>
