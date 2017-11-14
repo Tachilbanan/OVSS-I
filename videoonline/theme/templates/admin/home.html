@@ -1,25 +1,46 @@
 {% extends "base.html" %}
-{% block body %}
-{% block dh %}
+
+{% block head %}
+<style>
+	.button{
+		position:fixed;
+		top:40%;
+	}
+</style>
 {% endblock %}
+{% block body %}
+{% block dh %}{% endblock %}
 <div class="container-fluid">
-			<!--整体定义框架-->
-			<div class="row">
-				<!--侧边导航栏-->
-				<div class="col-xs-4 col-md-4 col-sm-4">
-					<ul class="nav nav-pills nav-justified">
-						<a href="{{ url_for('admin.user') }}" target="menuFrame" role="button"><li>管理员</li></a>
-						<a href="{{ url_for('admin.classify') }}" target="menuFrame" role="button"><li>标签管理</li></a>
-						<a href="{{ url_for('admin.video') }}" target="menuFrame" role="button"><li>视频管理</li></a>
-                        <br><br>
-						<a href="{{ url_for('/.logout') }}" role="button"><li>退出</li></a>
-					</ul>
-				</div>
-				<!--内容页面-->
-				<div id="" class="col-xs-8 col-md-8 col-sm-8">
-					<iframe id="menuFrame" name="menuFrame" src="{{ url_for('admin.user') }}" style="overflow:visible;" scrolling="yes" frameborder="no" width="100%" height="100%; float:left">
-					</iframe>
-				</div>
-			</div>
+	<!--整体定义框架-->
+	<div class="row">
+		<!--侧边导航栏-->
+		<div class="col-xs-4 col-md-2 col-sm-4">
+			<ul class="nav nav-pills nav-justified">
+				<a href="{{ url_for('admin.user') }}" onclick="setIframeHeight()" target="menuFrame" role="button"><li>管理员管理</li></a>
+				<a href="{{ url_for('admin.classify') }}" onclick="setIframeHeight()" target="menuFrame" role="button"><li>分类管理</li></a>
+				<a href="{{ url_for('admin.video') }}" onclick="setIframeHeight()" target="menuFrame" role="button"><li>视频管理</li></a>
+				<a href="{{ url_for('admin.user_add') }}" target="menuFrame" role="button"><li>管理员添加</li></a>
+				<a href="{{ url_for('admin.classify_add') }}" target="menuFrame" role="button"><li>分类添加</li></a>
+				<a href="{{ url_for('admin.video_add') }}" onclick="setIframeHeight()" target="menuFrame" role="button"><li>添加视频</li></a>
+				<br><br>
+				<a href="{{ url_for('/.logout') }}" role="button"><li>退出</li></a>
+			</ul>
 		</div>
+		<!--内容页面-->
+		<div id="" class="col-xs-8 col-md-10 col-sm-8">
+					<iframe id="menuFrame" name="menuFrame" src="{{ url_for('admin.user') }}" onload="changeFrameHeight()"
+							style="overflow:visible;" scrolling="yes" frameborder="no" width="100%" height="100%; float:left">
+					</iframe>
+		</div>
+	</div>
+</div>
+<script>
+	function changeFrameHeight(){
+    var ifm= document.getElementById("menuFrame");
+    ifm.height=document.documentElement.clientHeight-50;
+}
+window.onresize=function(){
+     changeFrameHeight();
+}
+</script>
 {% endblock %}

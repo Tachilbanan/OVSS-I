@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block body %}
+{% block logo %}{% endblock %}
+{% block dh %}{% endblock %}
+
+<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+      <div class="row">
+        {% if mess %}
+        <div class="text-center">
+            {{ mess }}
+        </div>
+        {% endif %}
+  <!-- Set the form -->
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <div> 
+      {{ form.username.label }}
+      {%for e in form.username.errors%}
+      <span style="color: red">*{{e}}</span>
+      {%endfor%}
+      {{ form.username(class_="form-control") }}                           
+    </div>
+    <div class="form-group">                                               
+      {{ form.password.label }}
+      {%for e in form.password.errors%}
+      <span style="color: red">*{{e}}</span>
+      {%endfor%}
+      {{ form.password(class_='form-control') }}                           
+    </div>
+    <div class="form-group">
+      {{ form.comfirm.label }}
+      {%for e in form.comfirm.errors%}
+      <span style="color: red">*{{e}}</span>
+      {%endfor%}
+      {{ form.comfirm(class_='form-control') }}                            
+    </div>
+    <div class="text-center">
+      <input class="btn btn-primary" type="submit" value="添加管理员">
+    </div>
+    <div class="g-recaptcha" data-sitekey="<Your public key>"></div>
+  </form>
+
+  </div>
+{% endblock %}

@@ -1,11 +1,12 @@
 from flask import Flask, render_template
 from videoonline.models import db, User, Video, Role, Classify
-from videoonline.extensions import bcrypt, login_manager, principals, cache, assets_env, main_css, main_js
+from videoonline.extensions import bcrypt, login_manager, principals, cache, assets_env, main_css, main_js, videos_upload
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 from flask_login import current_user
+from flask_uploads import configure_uploads, patch_request_class
 
 
-def Create_App(Config = 'videoonline.config.DevConfig'):
+def Create_App(Config = 'videoonline.config.Config'):
     app = Flask(__name__)
     with app.app_context():
         app.config.from_object(Config)
@@ -26,6 +27,10 @@ def Create_App(Config = 'videoonline.config.DevConfig'):
         assets_env.init_app(app)
         assets_env.register('main_js', main_js)
         assets_env.register('main_css', main_css)
+        # 设置大小
+        patch_request_class(app, 12800 * 1024 * 1024)
+        # 上传文件 初始化
+        configure_uploads(app, videos_upload)
 
         # 因为 identity_loaded 信号实现函数,需要访问 app 对象, 所以直接在 create_app() 中实现.
         @identity_loaded.connect_via(app)
@@ -43,10 +48,10 @@ def Create_App(Config = 'videoonline.config.DevConfig'):
                 identity.provides.add(UserNeed(current_user.id))
 
             # Add each role to the identity user object
-            if hasattr(current_user, 'roles'):
+            if hasattr(current_user, 'role'):
                 # 原本多对多的用户权限，现在改成用户对应角色 一对多，取消for循环
-                # for role in current_user.roles:
-                role = current_user.roles
+                # for role in current_user.role:
+                role = current_user.role
                 identity.provides.add(RoleNeed(role.name))
 
         app.static_folder = 'theme/static'

@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from videoonline.extensions import bcrypt
+from flask_login import AnonymousUserMixin
+import time
 
 db = SQLAlchemy()
 
@@ -25,7 +27,7 @@ class User(db.Model):
 
         # Setup the default-role for user.
         helper = Role.query.filter_by(name='helper').one()
-        self.roles = helper
+        self.role = helper
 
     def __repr__(self):
         '''Define the string format for instance of User.'''
@@ -78,49 +80,56 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), unique=True)
     description = db.Column(db.String(255))
-    users = db.relationship('User', backref='roles')
+    users = db.relationship('User', backref='role')
 
     def __init__(self, name):
-        # self.id = id
         self.name = name
 
     def __repr__(self):
         return "<Model Role `{}`>".format(self.name)
 
+
 # 视频-分类 多对多关系声明
 videos_classifys = db.Table('videos_classifys',
                       db.Column('video_id', db.String(45), db.ForeignKey('videos.id')),
-                      db.Column('classify_id', db.String(45), db.ForeignKey('classifys.id')))
+                      db.Column('classify_id', db.Integer, db.ForeignKey('classifys.id')))
 
 # 视频
 class Video(db.Model):
     '''Represents Proected videos.'''
     __tablename__ = 'videos'
 
-    id = db.Column(db.String(255), primary_key = True)
+    id = db.Column(db.String(255), primary_key=True)
     name = db.Column(db.String(255))
-    publish_date = db.Column(db.DateTime)
+    filename = db.Column(db.String(255))
+    c_time = db.Column(db.DateTime)
     # many to many: videos <==> classifys
     classifys = db.relationship(
         'Classify',
-        secondary = videos_classifys,
-        backref = db.backref('videos', lazy='dynamic'))
+        secondary=videos_classifys,
+        backref=db.backref('videos', lazy='dynamic'))
 
-    def __init__(self, id, name):
-        self.id = id
+    def __init__(self, _id, name, filename):
+        self.id = _id
         self.name = name
+        self.filename = filename
+        self.c_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     def __repr__(self):
         '''Define the string format for instance of Video.'''
         return "<Model Video '{}'>".format(self.name)
+
 
 # 分类
 class Classify(db.Model):
     '''Represents Proected tags.'''
     __tablename__ = 'classifys'
 
-    id = db.Column(db.String(45), primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
+
+    def __init__(self, name):
+        self.name = name
 
     def __repr__(self):
         '''Define the string format for instance of Classify.'''

@@ -63,3 +63,19 @@ main_js = Bundle(
     filters='jsmin',
     output='assets/js/common.js')
 
+# 文件上传
+from flask_uploads import UploadSet
+from builtins import tuple
+
+VIDEOS = tuple('mp4 swf'.split())
+
+videos_upload = UploadSet('videos', VIDEOS)
+
+# md5 加密
+import hashlib
+m = hashlib.md5()
+
+
+def md5(string):
+    m.update(string.encode())
+    return m.hexdigest()

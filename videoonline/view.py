@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for
+from flask import Blueprint, request, render_template, flash, redirect, url_for, send_from_directory, send_file
 from videoonline.extensions import cache
 from videoonline.forms import LoginForm, RegisterForm
 from videoonline.models import db, User, Video, Classify
@@ -19,12 +19,10 @@ def make_cache_key(*args, **kwargs):
 
 @root_view.route('/')
 @root_view.route('/<int:page>')
-@cache.cached(timeout=60)
 def home(page=1):
     """View function for home page"""
-
     videos = Video.query.order_by(
-        Video.publish_date.desc()
+        Video.c_time.desc()
     ).paginate(page, 10)
 
     recent, top_classifys = sidebar_data()
@@ -36,7 +34,6 @@ def home(page=1):
 
 
 @root_view.route('/video/<string:video_id>')
-@cache.cached(timeout=60, key_prefix=make_cache_key)
 def video(video_id):
     """View function for post page"""
 
@@ -44,12 +41,21 @@ def video(video_id):
     classifys = video.classifys
     recent, top_classifys = sidebar_data()
 
-    return render_template('post.html',
+    return render_template('video.html',
                            video=video,
                            classify=classifys,
                            recent=recent,
                            top_classifys=top_classifys
                            )
+
+
+@root_view.route('/play/<string:video_id>')
+def play(video_id):
+    video = Video.query.filter_by(id=video_id).all()
+    if not video != []:
+        return render_template('40X/404.html'), 404
+    filename = video[0].filename
+    return send_from_directory('theme/static/videos/', filename=filename)
 
 
 @root_view.route('/classify/<string:classify_name>')
@@ -74,7 +80,7 @@ def sidebar_data():
 
     # Get Video of recent
     recent = db.session.query(Video).order_by(
-            Video.publish_date.desc()
+            Video.c_time.desc()
         ).limit(5).all()
 
     # 获取分类
@@ -130,25 +136,3 @@ def logout():
     flash("You have been logged out.", category="success")
     return redirect(url_for('/.home'))
 
-
-@root_view.route('/register', methods=['GET', 'POST'])
-def register():
-    """View function for Register."""
-
-    # Will be check the username whether exist.
-    form = RegisterForm()
-
-    if form.validate_on_submit():
-        new_user = User(username=form.username.data,
-                        password=form.password.data,
-                        )
-
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash('Your user has been created, please login.',
-              category="success")
-
-        return redirect(url_for('/.login'))
-    return render_template('register.html',
-                           form=form)

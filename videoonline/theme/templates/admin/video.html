@@ -10,12 +10,14 @@
 {% block body %}
 {% block logo %}{% endblock %}
 {% block dh %}{% endblock %}
+<div class="container-fluid">
 <div class="row">
 			<div class="col-xs-12 col-md-12 col-sm-12">
 				<table class="table">
 					<thead>
 						<tr>
 							<th>视频名</th>
+							<th>分类</th>
 							<th>日期</th>
 							<th colspan="2">操作</th>
 						</tr>
@@ -25,8 +27,13 @@
                     {% for i in video %}
 						<tr>
 							<td>{{ i.name }}</td>
-							<td> i.time </td>
-							<td><a href="{{ url_for('admin.video') }}">修改</a></td>
+							{% if i.classifys %}
+							<td>{{ i.classifys[0].name }}</td>
+							{% else %}
+							<td>无类别</td>
+							{% endif %}
+							<td>{{ i.c_time }}</td>
+							<td><a href="{{ url_for('admin.video_edit',_id=i.id) }}">修改</a></td>
 							<td><a href="{{ url_for('admin.video') }}">删除</a></td>
 						</tr>
                     {% endfor %}
@@ -35,4 +42,5 @@
 				</table>
 			</div>
 		</div>
+</div>
 {% endblock %}

@@ -1,12 +1,11 @@
 from flask_wtf import FlaskForm
-
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+from videoonline.extensions import videos_upload
 from wtforms import (
     StringField,
-    TextField,
-    TextAreaField,
+    SubmitField,
     PasswordField,
     BooleanField,
-    ValidationError
 )
 from wtforms.validators import DataRequired, Length, EqualTo, URL
 
@@ -40,12 +39,13 @@ class LoginForm(FlaskForm):
 
         return True
 
+
 class RegisterForm(FlaskForm):
     """Register Form."""
 
-    username = StringField('Username', [DataRequired(), Length(max=255)])
-    password = PasswordField('Password', [DataRequired(), Length(min=4)])
-    comfirm = PasswordField('Confirm Password', [DataRequired(), EqualTo('password')])
+    username = StringField('Username', [DataRequired('用户名已经存在！'), Length(max=255)])
+    password = PasswordField('Password', [DataRequired(message='密码不符合要求！'), Length(min=4)])
+    comfirm = PasswordField('Confirm Password', [DataRequired(message='两次密码不一致！'), EqualTo('password')])
 
     def validate(self):
         check_validate = super(RegisterForm, self).validate()
@@ -60,3 +60,13 @@ class RegisterForm(FlaskForm):
             self.username.errors.append('User with that name already exists.')
             return False
         return True
+
+
+class UploadForm(FlaskForm):
+    """upload Form."""
+
+    video = FileField(validators=[FileAllowed(videos_upload, u'只能上传视频！'),
+                                  FileRequired(u'文件未选择！'),
+                                  ]
+                      )
+    submit = SubmitField(u'上传')
