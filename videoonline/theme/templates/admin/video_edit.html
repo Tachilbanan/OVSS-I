@@ -33,7 +33,7 @@
 						<div class="col-sm-5 col-md-5 col-xs-5">
 							<select name="cla" style="height:30px; width:100px;">
                                 {% for i in cla %}
-                                    {% if i in video.classifys %}
+                                    {% if i == video.classify %}
                                     <option value="{{ i.name }}" selected="selected">{{ i.name }}</option>
                                     {% else %}
 								        <option value="{{ i.name }}">{{ i.name }}</option>
@@ -43,10 +43,10 @@
 						</div>
 					</div>
 					<div class="col-md-12">
-						<div class="col-md-3 col-md-offset-3 text-center">
+						<div class="col-md-3 col-xs-3 col-sm-3 col-md-offset-3 col-xs-offset-3 col-sm-offset-3 text-center">
 						<button type="submit" class="btn btn-default">确认</button>
 						</div>
-						<div class="col-md-3 text-center">
+						<div class="col-md-3 col-xs-3 col-sm-3 text-center">
 						<button type="reset" class="btn btn-default">取消</button>
 						</div>
 					</div>

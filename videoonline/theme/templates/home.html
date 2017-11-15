@@ -1,7 +1,47 @@
 <!-- Replace the TITLE of template base.html -->
 {% extends "base.html"%}
-{% block title %}在线视频学习{% endblock %}
-
+{% block head %}
+<style>
+    <!--遮罩效果-->
+    .type {
+        opacity: 1;
+        bottom: 0;
+        right: 0;
+        color: #000000;
+        height: 12px;
+        line-height: 20px;
+        padding: 0 5px 1px 0;
+        -webkit-transition: all .3s;
+        -o-transition: all .3s;
+        transition: all .3s;
+        padding: 3px 5px;
+        border-radius: 4px 0 0;
+        transition: opacity .3s;
+    }
+    .mask-wrapper{
+        position:relative;
+        overflow:hidden;
+    }
+    .mask-inner{
+        position:absolute;
+        left:0;
+        top:100%;
+        width:100%;
+        -moz-transition: top ease 200ms;
+        -o-transition: top ease 200ms;
+        -webkit-transition: top ease 200ms;
+        transition: top ease 200ms;
+        color:rgba(255,255,255,1);
+    }
+    .mask-wrapper:hover .mask-inner{
+        top:0;
+    }
+    #my-mask .mask-inner{
+        height:100%;
+        background:rgba(0,0,0,.7);
+    }
+</style>
+{% endblock %}
 <!-- Replace the BODY of template base.html -->
 {% block body %}
 <!-- The data object from view function: `home()` -->

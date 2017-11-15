@@ -8,22 +8,11 @@ from flask_principal import identity_changed, Identity, current_app, AnonymousId
 
 root_view = Blueprint("/", __name__)
 
-
-def make_cache_key(*args, **kwargs):
-    """Dynamic creation the request url."""
-
-    path = request.path
-    args = str(hash(frozenset(request.args.items())))
-    return (path + args).encode('utf-8')
-
-
 @root_view.route('/')
 @root_view.route('/<int:page>')
 def home(page=1):
     """View function for home page"""
-    videos = Video.query.order_by(
-        Video.c_time.desc()
-    ).paginate(page, 10)
+    videos = Video.query.order_by(Video.c_time.desc()).paginate(page, 10)
 
     recent, top_classifys = sidebar_data()
 
@@ -38,12 +27,12 @@ def video(video_id):
     """View function for post page"""
 
     video = db.session.query(Video).get_or_404(video_id)
-    classifys = video.classifys
+    classify = video.classify
     recent, top_classifys = sidebar_data()
 
     return render_template('video.html',
                            video=video,
-                           classify=classifys,
+                           classify=classify,
                            recent=recent,
                            top_classifys=top_classifys
                            )
@@ -58,23 +47,36 @@ def play(video_id):
     return send_from_directory('theme/static/videos/', filename=filename)
 
 
-@root_view.route('/classify/<string:classify_name>')
-def classify(classify_name):
-    """View function for classify page"""
-
-    classifys = db.session.query(Classify).filter_by(name = classify_name).first_or_404()
-    videos = classifys.videos.order_by(Video.publish_date.desc()).all()
+@root_view.route('/select/')
+@root_view.route('/select/<_w>')
+@root_view.route('/select/<_w>/<int:page>')
+def select(_w='', page=1):
+    if not _w:
+        return redirect(url_for('/.home'))
+    videos = Video.query.filter(Video.name.ilike('%' + _w + '%')).paginate(page, 10)
     recent, top_classifys = sidebar_data()
 
-    return render_template('classify.html',
-                           classifys=classifys,
+    return render_template('home.html',
                            videos=videos,
                            recent=recent,
                            top_classifys=top_classifys)
 
 
-# 侧边栏数据
-@cache.cached(timeout=7200, key_prefix='sidebar_data')
+@root_view.route('/classify/<string:classify_name>')
+@root_view.route('/classify/<string:classify_name>/<int:page>')
+def classify(classify_name, page=1):
+    """View function for classify page"""
+
+    classify = db.session.query(Classify).filter_by(name=classify_name).first()
+    videos = Video.query.filter_by(classify=classify).paginate(page, 10)
+    recent, top_classifys = sidebar_data()
+
+    return render_template('home.html',
+                           videos=videos,
+                           recent=recent,
+                           top_classifys=top_classifys)
+
+
 def sidebar_data():
     """Set the sidebar function."""
 

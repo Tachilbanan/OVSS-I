@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, abort, url_for
 from flask_login import login_required
 from videoonline.models import db, User, Video, Classify, Role
 from videoonline.extensions import admin_permission, superadmin_permission, videos_upload, md5
 from videoonline.forms import UploadForm, RegisterForm
 import time
+import os
 
 admin_view = Blueprint('admin', __name__)
 
@@ -28,6 +29,8 @@ def video():
 @admin_view.route('/video/add')
 @login_required
 def video_add():
+    if not superadmin_permission.can():
+        return render_template('40X/403.html'), 403
     form = UploadForm()
     return render_template('admin/video_add.html', form=form)
 
@@ -36,11 +39,12 @@ def video_add():
 @login_required
 def upload():
     # 判断权限
-    if not (admin_permission.can() or superadmin_permission.can()):
+    if not superadmin_permission.can():
         return render_template('40X/403.html', re=url_for('admin.home')), 403
 
     form = UploadForm()
     img = None
+    mess = None
     if form.validate_on_submit():
         # 这里将要对文件名进行处理 不能直接处理中文文件名
         # 获取文件名， 扩展名
@@ -56,16 +60,19 @@ def upload():
         tmp = Video(_id, name, filename)
         db.session.add(tmp)
         db.session.commit()
-    return render_template('admin/video_add.html', form=form, img=img, mess='添加成功！')
+        mess = '添加成功！'
+    return render_template('admin/video_add.html', form=form, img=img, mess=mess)
 
 
 @admin_view.route('/video_edit/<_id>', methods=['GET', 'POST'])
 @login_required
 def video_edit(_id):
+    if not (superadmin_permission.can() or admin_permission.can()):
+        return render_template('40X/403.html'), 403
     _video = Video.query.filter_by(id=_id).first()
     cla = Classify.query.all()
     if not _video:
-        return render_template('40X/404.html'), 404
+        abort(404)
 
     if request.method == 'GET':
         return render_template('admin/video_edit.html', video=_video, cla=cla)
@@ -76,12 +83,26 @@ def video_edit(_id):
         mess = '视频名不能为空！'
     else:
         this_cla = Classify.query.filter_by(name=this_cla).first()
-        _video.classifys = [this_cla]
+        _video.classify = this_cla
         _video.name = this_name
         db.session.add(_video)
         db.session.commit()
         mess = '视频信息修改成功！'
     return render_template('admin/video_edit.html', video=_video, cla=cla, mess=mess)
+
+
+@admin_view.route('/video_delete/<_id>')
+def video_delete(_id):
+    if not superadmin_permission.can():
+        return render_template('40X/403.html'), 403
+    video = Video.query.filter_by(id=_id).first()
+    if not video:
+        abort(404)
+    file = videos_upload.path(video.filename)
+    os.remove(file)
+    db.session.delete(video)
+    db.session.commit()
+    return '视频删除成功！'
 
 
 @admin_view.route('/user')
@@ -94,6 +115,8 @@ def user():
 @admin_view.route('/user_add', methods=['GET', 'POST'])
 @login_required
 def user_add():
+    if not superadmin_permission.can():
+        return render_template('40X/403.html'), 403
     form = RegisterForm()
     mess = None
     if form.validate_on_submit():
@@ -112,18 +135,19 @@ def user_add():
 @admin_view.route('/user_edit/<_id>', methods=['GET', 'POST'])
 @login_required
 def user_edit(_id):
+    if not (superadmin_permission.can() or admin_permission.can()):
+        return render_template('40X/403.html'), 403
     _user = User.query.filter_by(id=_id).first()
     if not _user != []:
-        return render_template('40X/404.html'), 404
+        abort(404)
     role = Role.query.all()
     if request.method == 'GET':
         return render_template('admin/user_edit.html', user=_user, role=role)
     for i in range(1):
         if request.method == 'POST':
-            mess = ''
             username = request.form.get('username')
             thisuser = User.query.filter_by(username=username).first()
-            if not thisuser == [] and thisuser != _user:
+            if not thisuser == _user:
                 mess = '用户名已经存在！'
                 break
             password = request.form.get('password')
@@ -139,8 +163,9 @@ def user_edit(_id):
                 _user.password = _user.set_password(password)
             _role = request.form.get('role')
             _role = Role.query.filter_by(name=_role).first()
+            if _role:
+                _user.role = _role
             _user.username = username
-            _user.role = _role
             db.session.add(_user)
             db.session.commit()
             mess = '修改成功！'
@@ -150,8 +175,14 @@ def user_edit(_id):
 @admin_view.route('/user_delete/<_id>')
 @login_required
 def user_delete(_id):
-
-    return 'False 删除失败！'
+    if not superadmin_permission.can():
+        return render_template('40X/403.html'), 403
+    user = User.query.filter_by(id=_id).first()
+    if not user:
+        abort(404)
+    db.session.delete(user)
+    db.session.commit()
+    return '用户删除成功！'
 
 
 @admin_view.route('/classify')
@@ -161,9 +192,11 @@ def classify():
     return render_template('admin/classify.html', classify=_classify)
 
 
-@admin_view.route('classify_add', methods=['GET', 'POST'])
+@admin_view.route('/classify_add', methods=['GET', 'POST'])
 @login_required
 def classify_add():
+    if not superadmin_permission.can():
+        return render_template('40X/403.html'), 403
     if request.method == 'GET':
         return render_template('admin/classify_add.html')
 
@@ -179,12 +212,14 @@ def classify_add():
     return render_template('admin/classify_add.html', mess=mess)
 
 
-@admin_view.route('admin/classify_edit/<_id>', methods=['GET', 'POST'])
+@admin_view.route('/classify_edit/<_id>', methods=['GET', 'POST'])
 @login_required
 def classify_edit(_id):
+    if not (superadmin_permission.can() or admin_permission.can()):
+        return render_template('40X/403.html'), 403
     cla = Classify.query.filter_by(id=_id).first()
     if not cla:
-        return render_template('40X/404.html'), 404
+        abort(404)
     if request.method == 'GET':
         return render_template('admin/classify_edit.html', cla=cla)
 
@@ -197,3 +232,18 @@ def classify_edit(_id):
         db.session.commit()
         mess = '分类名称修改成功！'
     return render_template('admin/classify_edit.html', cla=cla, mess=mess)
+
+
+@admin_view.route('/classify_delete/<_id>', methods=['GET', 'POST'])
+@login_required
+def classify_delete(_id):
+    if not superadmin_permission.can():
+        return render_template('40X/403.html'), 403
+    cla = Classify.query.filter_by(id=_id).first()
+    if not cla:
+        abort(404)
+    for i in cla.videos:
+        i.classify = None
+    db.session.delete(cla)
+    db.session.commit()
+    return '分类删除成功！'

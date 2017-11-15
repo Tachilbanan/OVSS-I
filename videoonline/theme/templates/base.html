@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" >
   <!-- Will be replace the page title -->
-  <title>{% block title %}Home{% endblock %}</title>
+  <title>{% block title %}OVSS-I{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
   <!-- Macro: `render paginate` -->
   {% macro render_pagination(pagination, endpoint) %}
@@ -58,26 +58,28 @@
           {% block dh %}
             <div>
                 <!--名字-->
-                <div class="col-xs-2 text-center" style="background-color:rgba(0,0,0,0.3)">
-                    <h4>OVSS-I</h4>
+                <div class="col-xs-3 text-center" style="background-color:rgba(0,0,0,0.3)">
+                    <h4><a href="/">OVSS-I</a></h4>
                 </div>
                 <!--搜索框,导航栏-->
-                <div class="col-xs-10 col-xs-offset-0 input-group btn-group" style="margin-top:0px positon:relative">
-                    <input type="text" class="form-control"placeholder="请输入字段名" />
+                <div class="col-xs-9 col-xs-offset-0 input-group btn-group" style="margin-top:0px positon:relative">
+                    <input type="text" id="select" name="select" class="form-control"placeholder="请输入视频名" onkeydown="entersearch()" />
                     <span class="input-group-btn">
-                        <button class="btn btn-info btn-search">搜索</button>
+                        <button onclick="select()" class="btn btn-info btn-search">搜索</button>
+
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">分类
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href="{{ url_for('admin.home') }}">临时登录访问</a>
-                            </li>
                         {% for classify in top_classifys %}
                               <li>
                                   <a href="{{ url_for('/.classify',classify_name=classify.name) }}">{{ classify.name }}</a>
                               </li>
                         {% endfor %}
+                            <hr>
+                            <li>
+                                <a href="{{ url_for('admin.home') }}">登录</a>
+                            </li>
                         </ul>
                     </span>
                 </div>
@@ -104,5 +106,18 @@
     {% endblock %}
   <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script>
+    function select(){
+        var w = $("#select").val()
+        window.location.href='/select/'+w
+    }
+    function entersearch(){
+        var event = window.event || arguments.callee.caller.arguments[0];
+        if (event.keyCode == 13)
+        {
+            select();
+        }
+    }
+</script>
 </body>
 </html>

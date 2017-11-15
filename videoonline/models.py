@@ -5,10 +5,6 @@ import time
 
 db = SQLAlchemy()
 
-# # 用户-权限 多对多关系声明
-# users_roles = db.Table('users_roles',
-#     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-#     db.Column('role_id', db.Integer, db.ForeignKey('roles.id')))
 
 # 用户
 class User(db.Model):
@@ -72,6 +68,7 @@ class User(db.Model):
 
         return str(self.id).encode()
 
+
 # 权限
 class Role(db.Model):
     """Represents Proected roles."""
@@ -89,11 +86,6 @@ class Role(db.Model):
         return "<Model Role `{}`>".format(self.name)
 
 
-# 视频-分类 多对多关系声明
-videos_classifys = db.Table('videos_classifys',
-                      db.Column('video_id', db.String(45), db.ForeignKey('videos.id')),
-                      db.Column('classify_id', db.Integer, db.ForeignKey('classifys.id')))
-
 # 视频
 class Video(db.Model):
     '''Represents Proected videos.'''
@@ -103,11 +95,8 @@ class Video(db.Model):
     name = db.Column(db.String(255))
     filename = db.Column(db.String(255))
     c_time = db.Column(db.DateTime)
-    # many to many: videos <==> classifys
-    classifys = db.relationship(
-        'Classify',
-        secondary=videos_classifys,
-        backref=db.backref('videos', lazy='dynamic'))
+
+    classify_id = db.Column(db.Integer, db.ForeignKey('classifys.id'))
 
     def __init__(self, _id, name, filename):
         self.id = _id
@@ -127,6 +116,7 @@ class Classify(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
+    videos = db.relationship('Video', backref='classify')
 
     def __init__(self, name):
         self.name = name
