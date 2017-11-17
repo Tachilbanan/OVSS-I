@@ -29,6 +29,9 @@ def video(video_id):
     video = db.session.query(Video).get_or_404(video_id)
     classify = video.classify
     recent, top_classifys = sidebar_data()
+    video.view = video.view + 1
+    db.session.add(video)
+    db.session.commit()
 
     return render_template('video.html',
                            video=video,
@@ -102,8 +105,9 @@ def login():
 
         # 登入用户
         # login_user(user, remember = form.remember.data)
-        # 都是管理员 设置记住身份应该不合适
-        login_user(user)
+        # 都是管理员 设置记住身份应该不合适,但是总需要自动登录
+        # 我就把他加上了 不晓得能否解决问题
+        login_user(user, remember=True)
 
         # 防止next异常、攻击、等各种，具体根据自己的需要去写。
         # if not next_is_valid(next):

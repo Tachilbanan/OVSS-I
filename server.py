@@ -1,6 +1,6 @@
-from videoonline import Create_App
+from videoonline import create_app
 
-app = Create_App('videoonline.config.DevConfig')
+app = create_app('videoonline.config.DevConfig')
 
 if __name__ == '__main__':
     app.debug = True

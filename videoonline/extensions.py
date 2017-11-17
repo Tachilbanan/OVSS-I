@@ -64,12 +64,13 @@ main_js = Bundle(
     output='assets/js/common.js')
 
 # 文件上传
-from flask_uploads import UploadSet
+from flask_uploads import UploadSet, IMAGES
 from builtins import tuple
 
 VIDEOS = tuple('mp4 swf'.split())
 
 videos_upload = UploadSet('videos', VIDEOS)
+images_upload = UploadSet('images', IMAGES)
 
 # md5 加密
 import hashlib

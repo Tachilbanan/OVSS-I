@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, abort, url_for
+from flask import Blueprint, render_template, request, abort, url_for, redirect
 from flask_login import login_required
 from videoonline.models import db, User, Video, Classify, Role
-from videoonline.extensions import admin_permission, superadmin_permission, videos_upload, md5
+from videoonline.extensions import admin_permission, superadmin_permission, videos_upload,\
+    md5, images_upload
 from videoonline.forms import UploadForm, RegisterForm
 import time
 import os
@@ -21,9 +22,9 @@ def home():
 
 @admin_view.route('/video')
 @login_required
-def video():
+def video(mess=None):
     _video = Video.query.all()
-    return render_template('admin/video.html', video=_video)
+    return render_template('admin/video.html', video=_video, mess=mess)
 
 
 @admin_view.route('/video/add')
@@ -43,25 +44,32 @@ def upload():
         return render_template('40X/403.html', re=url_for('admin.home')), 403
 
     form = UploadForm()
-    img = None
-    mess = None
     if form.validate_on_submit():
         # 这里将要对文件名进行处理 不能直接处理中文文件名
         # 获取文件名， 扩展名
-        kz = form.video.data.filename.split('.')
+        video_kz = form.video.data.filename.split('.')
+
         name = form.video.data.filename
         # 对文件名md5加密
         _id = md5(form.video.data.filename + str(time.time()))
         # 将md5后的文件名加上扩展名提交
-        form.video.data.filename = _id + '.' + kz[-1]
+        form.video.data.filename = _id + '.' + video_kz[-1]
         # 存储文件，并接受返回文件名
         filename = videos_upload.save(form.video.data)
+        # 判断图片是否存在
+        if form.image.data:
+            image_name = form.image.data.filename.split('.')
+            form.image.data.filename = md5(form.image.data.filename + str(time.time())
+                                           ) + '.' + image_name[-1]
+            img = images_upload.save(form.image.data)
+        else:
+            img = None
         # 创建对象，存入数据库
-        tmp = Video(_id, name, filename)
+        tmp = Video(_id, name, filename, img)
         db.session.add(tmp)
         db.session.commit()
-        mess = '添加成功！'
-    return render_template('admin/video_add.html', form=form, img=img, mess=mess)
+        return 'success'
+    return render_template('admin/video_add.html', form=form)
 
 
 @admin_view.route('/video_edit/<_id>', methods=['GET', 'POST'])
@@ -95,21 +103,24 @@ def video_edit(_id):
 def video_delete(_id):
     if not superadmin_permission.can():
         return render_template('40X/403.html'), 403
-    video = Video.query.filter_by(id=_id).first()
-    if not video:
+    _video = Video.query.filter_by(id=_id).first()
+    if not _video:
         abort(404)
-    file = videos_upload.path(video.filename)
+    file = videos_upload.path(_video.filename)
+    if _video.img_name:
+        img = images_upload.path(_video.img_name)
+        os.remove(img)
     os.remove(file)
-    db.session.delete(video)
+    db.session.delete(_video)
     db.session.commit()
-    return '视频删除成功！'
+    return video(mess='视频删除成功！')
 
 
 @admin_view.route('/user')
 @login_required
-def user():
+def user(mess=None):
     _user = User.query.all()
-    return render_template('admin/user.html', user=_user)
+    return render_template('admin/user.html', user=_user, mess=mess)
 
 
 @admin_view.route('/user_add', methods=['GET', 'POST'])
@@ -127,6 +138,7 @@ def user_add():
         db.session.add(new_user)
         db.session.commit()
         mess = '添加用户成功！'
+        form.username.data = ''
 
         return render_template('admin/user_add.html', form=form, mess=mess)
     return render_template('admin/user_add.html', form=form)
@@ -177,19 +189,19 @@ def user_edit(_id):
 def user_delete(_id):
     if not superadmin_permission.can():
         return render_template('40X/403.html'), 403
-    user = User.query.filter_by(id=_id).first()
-    if not user:
+    _user = User.query.filter_by(id=_id).first()
+    if not _user:
         abort(404)
-    db.session.delete(user)
+    db.session.delete(_user)
     db.session.commit()
-    return '用户删除成功！'
+    return user(mess='用户删除成功！')
 
 
 @admin_view.route('/classify')
 @login_required
-def classify():
+def classify(mess=None):
     _classify = Classify.query.all()
-    return render_template('admin/classify.html', classify=_classify)
+    return render_template('admin/classify.html', classify=_classify, mess=mess)
 
 
 @admin_view.route('/classify_add', methods=['GET', 'POST'])
@@ -246,4 +258,4 @@ def classify_delete(_id):
         i.classify = None
     db.session.delete(cla)
     db.session.commit()
-    return '分类删除成功！'
+    return classify(mess='分类删除成功！')

@@ -1,15 +1,16 @@
 from flask import Flask, render_template
 from videoonline.models import db, User, Video, Role, Classify
-from videoonline.extensions import bcrypt, login_manager, principals, cache, assets_env, main_css, main_js, videos_upload
+from videoonline.extensions import bcrypt, login_manager, principals, cache,\
+    assets_env, main_css, main_js, videos_upload, images_upload
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 from flask_login import current_user
 from flask_uploads import configure_uploads, patch_request_class
 
 
-def Create_App(Config = 'videoonline.config.Config'):
+def create_app(config='videoonline.config.Config'):
     app = Flask(__name__)
     with app.app_context():
-        app.config.from_object(Config)
+        app.config.from_object(config)
 
         # Will be load the SQLALCHEMY_DATABASE_URL from config.py to db object
         db.init_app(app)
@@ -31,6 +32,7 @@ def Create_App(Config = 'videoonline.config.Config'):
         patch_request_class(app, 12800 * 1024 * 1024)
         # 上传文件 初始化
         configure_uploads(app, videos_upload)
+        configure_uploads(app, images_upload)
 
         # 因为 identity_loaded 信号实现函数,需要访问 app 对象, 所以直接在 create_app() 中实现.
         @identity_loaded.connect_via(app)

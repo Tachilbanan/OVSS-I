@@ -6,6 +6,7 @@
   <!-- Will be replace the page title -->
   <title>{% block title %}OVSS-I{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
   <!-- Macro: `render paginate` -->
   {% macro render_pagination(pagination, endpoint) %}
     <nav class="text-center">
@@ -78,7 +79,7 @@
                         {% endfor %}
                             <hr>
                             <li>
-                                <a href="{{ url_for('admin.home') }}">登录</a>
+                                <a href="{{ url_for('admin.home') }}">后台</a>
                             </li>
                         </ul>
                     </span>
@@ -104,7 +105,7 @@
   </div>
   {% block body %}
     {% endblock %}
-  <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+
   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 <script>
     function select(){

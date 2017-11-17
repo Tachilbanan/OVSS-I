@@ -5,7 +5,6 @@ import time
 
 db = SQLAlchemy()
 
-
 # 用户
 class User(db.Model):
     '''Represents Proected users.'''
@@ -94,14 +93,18 @@ class Video(db.Model):
     id = db.Column(db.String(255), primary_key=True)
     name = db.Column(db.String(255))
     filename = db.Column(db.String(255))
+    view = db.Column(db.Integer)
+    img_name = db.Column(db.String(255))
     c_time = db.Column(db.DateTime)
 
     classify_id = db.Column(db.Integer, db.ForeignKey('classifys.id'))
 
-    def __init__(self, _id, name, filename):
+    def __init__(self, _id, name, filename, img):
         self.id = _id
         self.name = name
         self.filename = filename
+        self.img_name = img
+        self.view = 0
         self.c_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     def __repr__(self):
