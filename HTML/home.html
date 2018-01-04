@@ -1,0 +1,135 @@
+<html>
+	<title>idea</title>
+		<head>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+			<meta charset="utf-8">
+			<link rel="stylesheet" href="css/bootstrap.min.css">
+			<script src="js/jquery-3.2.1.min.js"></script>
+			<script src="js/bootstrap.min.js"></script>
+			<script>
+				function search(){
+					$keyword = $("#keyword").val();
+					window.location.href = "/list-0-0-0-0-"+$keyword+"-0-0-1.html";
+				}
+				function entersearch(){
+					 //alert(dd);
+					var event = window.event || arguments.callee.caller.arguments[0];
+					if (event.keyCode == 13)
+					{
+						search();
+					}
+				}
+			</script>
+		</head>
+				<style>
+				<!--遮罩效果-->	
+				.type {
+					opacity: 1;
+					bottom: 0;
+					right: 0;
+					color: #000000;
+					height: 12px;
+					line-height: 20px;
+					padding: 0 5px 1px 0;
+					-webkit-transition: all .3s;
+					-o-transition: all .3s;
+					transition: all .3s;
+					padding: 3px 5px;
+					border-radius: 4px 0 0;
+					transition: opacity .3s;
+				}
+				.mask-wrapper{
+					position:relative;
+					overflow:hidden;
+				}
+				.mask-inner{
+					position:absolute;
+					left:0;
+					top:100%;
+					width:100%;
+					-moz-transition: top ease 200ms;
+					-o-transition: top ease 200ms;
+					-webkit-transition: top ease 200ms;
+					transition: top ease 200ms;
+					color:rgba(255,255,255,1);	
+				}
+				.mask-wrapper:hover .mask-inner{
+					top:0;
+				}
+				#my-mask .mask-inner{
+					height:100%;
+					background:rgba(0,0,0,.7);
+				}
+				</style>
+					<body>
+					<!--container-fluid栅格化屏幕-->
+						<div class="container-fluid">
+							<div class="row">
+							<!--LOGO部分-->
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									LOGO
+								</div>
+								<div>
+									<!--名字-->
+									<div class="col-xs-3 text-center" style="background-color:rgba(0,0,0,0.3)">
+										<h4>OVSS-I</h4>
+									</div>
+									<!--搜索框,导航栏-->
+									<div class="col-xs-9 col-xs-offset-0 input-group btn-group" style="margin-top:0px positon:relative">
+										<input type="text" class="form-control"placeholder="请输入视屏名" />
+										<span class="input-group-btn">
+											<button class="btn btn-info btn-search">搜索</button>
+											<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">分类
+												<span class="caret"></span>
+											</button>
+											<ul class="dropdown-menu" role="menu">
+											<li>
+												<a href="#">功能</a>
+											</li>
+											</ul>
+										</span>
+									</div>
+								</div>
+							</div><br>
+				<!--<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+								<div class="navbar-header">
+									<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example-navbar-collapse">
+										<span class="sr-only">切换导航</span>
+										<span class="icon-bar"></span>
+										<span class="icon-bar"></span>
+										<span class="icon-bar"></span>
+									</button>
+										<a class="navbar-brand" href="#">OVSS-I</a>
+								</div>
+						<div class="collapse navbar-collapse" id="example-navbar-collapse">
+							<ul class="nav navbar-nav">
+								<li class="active"><a href="#">iOS</a></li>
+								<li><a href="#">SVN</a></li>
+							</ul>
+						</div>
+					</div>
+				</nav>-->
+					<!--浏览部分-->
+						<div class="row">
+									<!--{% for video in videos %}-->
+							<div class="col-md-6 col-sm-6 col-xs-6">
+									<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3 col-sm-offset-3 col-xs-offset-0 text-center">
+										<a href="video.html" class="text-center">
+											<div id="my-mask" class="mask-wrapper">
+												<img alt="" src="Photo/小埋.jpg" class="img-responsive img-thumbnail"/>
+											</div>
+											<div class="col-md-6 col-sm-6 col-xs-7 text-center">
+												小埋
+											</div>
+											<div class="col-md-6 col-sm-6 col-xs-5 col-xs-offset-0 text-center">
+												<img alt="" src="Photo/眼睛.png" style="height:30px; width:30px;">1000
+											</div>
+										</a>
+									</div>	
+							</div>
+						</div>
+							<!--{% endfor %}-->
+						</div>
+					</body>
+</html>

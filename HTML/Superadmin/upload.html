@@ -1,0 +1,123 @@
+<html>
+	<head><title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="../css/bootstrap.min.css">
+		<script src="../js/jquery-3.2.1.min.js"></script>
+		<script src="../js/bootstrap.min.js"></script>
+		<script>
+			function uploadFile() {
+				$("#upload").attr("disabled", "disabled");
+				var file = $("#file")[0].files[0],  //文件对象
+					fileNum = $("#file")[0].files[0].length,
+					name = file.name,        //文件名
+					size = file.size,        //总大小
+					succeed = 0;
+				var shardSize = 2 * 1024 * 1024,    //以2MB为一个分片
+					shardCount = Math.ceil(size / shardSize);  //总片数
+				$('.progress .progress-bar').attr('data-transitiongoal', 0).progressbar({ display_text: 'fill' });
+				for (var i = 0; i < shardCount; ++i) {
+					//计算每一片的起始与结束位置
+					var start = i * shardSize,
+						end = Math.min(size, start + shardSize);
+					//构造一个表单，FormData是HTML5新增的
+					var form = new FormData();
+					form.append("data", file.slice(start, end));  //slice方法用于切出文件的一部分
+					form.append("name", name);
+					form.append("total", shardCount);  //总片数
+					form.append("index", i + 1);        //当前是第几片
+					//Ajax提交
+					$.ajax({
+						url: "Upload.ashx",
+						type: "POST",
+						data: form,
+						async: true,        //异步
+						processData: false,  //很重要，告诉jquery不要对form进行处理
+						contentType: false,  //很重要，指定为false才能形成正确的Content-Type
+						success: function () {
+							++succeed;
+							$("#output").text(succeed + " / " + shardCount);
+							var percent = ((succeed / shardCount).toFixed(2)) * 100;
+							updateProgress(percent);
+							if (succeed == shardCount) {
+								$("#upload").removeAttr("disabled");
+							}
+						}
+					});
+				}
+			}
+			function progress(percent, $element) {
+				var progressBarWidth = percent * $element.width() / 100;
+				$element.find('div').animate({ width: progressBarWidth }, 500).html(percent + "% ");
+			}
+			
+			//$(document).ready(function () {
+			//    $('.progress .progress-bar').progressbar({ display_text: 'fill' });
+			//});
+			function updateProgress(percentage) {
+				$('.progress .progress-bar').attr('data-transitiongoal', percentage).progressbar({ display_text: 'fill' });
+			}
+		</script>
+		<style>
+			.button{
+				position:fixed;
+				top:40%;
+			}
+			#buttonr{
+				position:fixed;
+				top:55%;
+			}
+			#progress_in{
+				position:fixed;
+				top:70%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<form>
+					<div class="col-md-4 col-sm-4 col-xs-4 col-md-offset-4 col-xs-offset-4 col-sm-offset-4 button">
+					<!--上传文件，opacity控制为透明不显示-->
+						<input type="file" id="input03" multiple="multiple" class="filestyle" tabindex="-1" style="opacity: 0; position:absolute; height:100%; width:93%;">
+						<!-- <div class="bootstrap-filestyle input-group"> -->
+							<!-- <div name="filedrag" style="position:absolute; width: 100%; height: 38px; z-index:-1;"></div> -->
+							<!-- <span class="group-span-filestyle" tabindex="0"> -->
+								<!-- <label for="input03" style="margin-bottom:0;" class="btn btn-primary"> -->
+									<!-- <span class="oi oi-folder"></span> -->
+									<!-- <span class="buttonText">上传文件</span> -->
+								<!-- </label> -->
+							<!-- </span> -->
+						<!-- </div> -->
+						<div class="bootstrap-filestyle">
+						<!--按钮样式-->
+							<button type="form-group" class="btn  btn-primary  btn-lg btn-block">
+								<label for="input03" style="margin-bottom:0"> 
+									<span class="glyphicon glyphicon glyphicon-cloud" aria-hidden="true"></span><br>
+									<span>选择文件</span>
+								</label>
+							</button>
+						</div>
+					</div>
+					<div id="buttonr" class="col-md-12 col-xs-12 col-sm-12">
+						<div class="col-md-2 col-xs-2 col-sm-2 col-md-offset-4 col-xs-offset-4 col-sm-offset-4 text-center">
+						<button id="upload" onclick="uploadFile();" type="submit" class="btn btn-default btn-primary  btn-lg">上传</button>
+						</div>
+						<div class="col-md-2 col-xs-2 col-sm-2 text-center">
+						<button type="reset" class="btn btn-default btn-primary  btn-lg">取消</button>
+						</div>
+					</div>
+					<div id="progress_in" class="col-md-12 col-xs-12 col-sm-12">
+						<div class="progress">
+							<div id="progressBar" class="progress-bar progress-bar-info" role="progressbar"
+								 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+								 >
+								<span class="sr-only">30% 完成（信息）</span>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
